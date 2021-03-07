@@ -6,8 +6,16 @@ const ENDPOINT = CORS_BYPASS + 'https://api.coinranking.com/v2/';
 const API_KEY = 'coinranking09fa4518fc5cff889974c064cb364674f95555d4d679c84e';
 
 const NULL_COIN = {
-  uuid: null,
-  name: '(escolha uma moeda)'
+  name: '(escolha uma moeda)',
+  uuid: 'aaaaaaa' // gambiarra pra manter o dropdown em ordem alfabética
+}
+
+function createCoin(dropdown, coin, isSelected) {
+  const option = document.createElement('option');
+  option.selected = isSelected;
+  option.text = `${coin.name} (${coin.symbol})`;
+  option.text = coin.name + (coin.symbol ? ` (${coin.symbol})` : '');
+  dropdown.add(option, coin.uuid);
 }
 
 async function getCoins() {
@@ -22,16 +30,18 @@ async function getCoins() {
 
 async function loadCoins() {
   let coins = await getCoins();
-  coins.sort((a, b) => a.name > b.name);
-  coins = [NULL_COIN, ...coins]; // TODO sort it alphabetically
-  const dropdown = document.getElementById('coins-list');
+  coins.sort((a, b) => a.name < b.name);
+  
+  const dropdownFrom = document.getElementById('daMoeda');
+  const dropdownTo = document.getElementById('paraMoeda');
 
   for (const coin of coins) {
-    const option = document.createElement('option');
-    option.text = `${coin.name} (${coin.symbol})`;
-    option.text = coin.name + (coin.symbol ? ` (${coin.symbol})` : '');
-    dropdown.add(option, coin.uuid);
+    createCoin(dropdownFrom, coin);
+    createCoin(dropdownTo, coin);
   }
+
+  createCoin(dropdownFrom, NULL_COIN, true);
+  createCoin(dropdownTo, NULL_COIN, true);
 }
 
 loadCoins();
