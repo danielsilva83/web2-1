@@ -5,6 +5,8 @@ const ENDPOINT = CORS_BYPASS + 'https://api.coinranking.com/v2/';
 
 const API_KEY = 'coinranking09fa4518fc5cff889974c064cb364674f95555d4d679c84e';
 
+let COINS = null; // referência global de moedas, atualizada com updateCoins()
+
 const NULL_COIN = {
   name: '(escolha uma moeda)',
   uuid: 'aaaaaaa' // gambiarra pra manter o dropdown em ordem alfabética
@@ -18,20 +20,23 @@ function createCoin(dropdown, coin, isSelected) {
   dropdown.add(option, coin.uuid);
 }
 
-async function getCoins() {
+async function updateCoins() {
   const results = await axios.get(ENDPOINT + 'coins', {
     headers: {
       'x-access-token': API_KEY,
     }
   });
 
-  return results.data.data.coins; // TODO tratar erros na request
+  COINS = results.data.data.coins; // TODO tratar erros na request
 }
 
 async function loadCoins() {
-  let coins = await getCoins();
+  await updateCoins();
+  const coins = COINS;
   coins.sort((a, b) => a.name < b.name);
   
+  console.log(coins); // TODO remover
+
   const dropdownFrom = document.getElementById('daMoeda');
   const dropdownTo = document.getElementById('paraMoeda');
 
