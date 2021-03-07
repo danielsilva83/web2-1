@@ -1,23 +1,211 @@
 <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>ConvertCoin</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand js-scroll-trigger" href="#page-top">ConvertCoin</a>
+                <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
 
-<head>
-  <meta charset="UTF-8"> 
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="coinranking.js"></script>
-</head>
-
-<body>
-    <div>
-      <span id="mostra_taxa"></span>
-      <div>
-        <select id="daMoeda"></select>
-        <input type="number" id="da_Moeda" value="1" />
-      </div>
-        <button id="troca"> ⇅ </button>
-      <div>
-        <select id="paraMoeda"></select>
-        <input type="number" id="para_Moeda" />
-      </div>
-    </div>
-</body>
-
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">Sobre</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Contato</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead bg-primary text-white text-center">
+            <div class="container d-flex align-items-center flex-column">
+                <!-- Masthead Avatar Image-->
+                <img class="masthead-avatar mb-5" src="assets/img/dollar-coin-money_icon-icons.com_56177.svg" alt="" />
+                <!-- Masthead Heading-->
+                <h1 class="masthead-heading text-uppercase mb-0">ConvertCoin</h1>
+                <!-- Icon Divider-->
+                <div class="divider-custom divider-light">
+                    <div class="divider-custom-line"></div>
+                    <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                    <div class="divider-custom-line"></div>
+                </div>
+                <!-- Masthead Subheading-->
+                <p class="masthead-subheading font-weight-light mb-0">Conversão de moedas com cotação em tempo real</p>
+            </div>
+        </header>
+        <!-- Portfolio Section-->
+        <body class="page-section-heading text-center text-uppercase text-secondary mb-0">
+            <div >
+              <span id="mostra_taxa"></span>
+              <div>
+                <select id="daMoeda"></select>
+                <input type="number" id="da_Moeda" value="1" />
+              </div>
+                <button id="troca"> ⇅ </button>
+              <div>
+                <select id="paraMoeda"></select>
+                <input type="number" id="para_Moeda" />
+              </div>
+            </div>
+        </body>
+        
+        
+        
+        <script>
+        
+        "use strict";
+        
+        const label_daMoeda = document.getElementById('daMoeda');
+        const input_da_Moeda = document.getElementById('da_Moeda');
+        const label_paraMoeda = document.getElementById('paraMoeda');
+        const input_para_Moeda = document.getElementById('para_Moeda');
+        
+        const mostra_taxa = document.getElementById('mostra_taxa');
+        const troca = document.getElementById('troca');
+        
+        label_daMoeda.addEventListener('change', calculate);
+        input_da_Moeda.addEventListener('input', calculate);
+        label_paraMoeda.addEventListener('change', calculate);
+        input_para_Moeda.addEventListener('input', calculate);
+        troca.addEventListener('click', infotroca);
+        
+        main();
+        
+        function main() {
+          let currency = { "BRL": "Real", "EUR": "Euro", "USD": "Dollar" };
+          let options = [];
+          for (var [key, value] of Object.entries(currency)) {
+            options.push(`<option value='${key}'>${value}</option>`);
+          }
+          label_daMoeda.innerHTML = options.join('\n');
+          label_paraMoeda.innerHTML = options.join('\n');
+          calculate();
+        }
+        
+        function infotroca() {
+          let temp = label_daMoeda.value;
+          label_daMoeda.value = label_paraMoeda.value;
+          label_paraMoeda.value = temp;
+          calculate();
+        }
+        
+        async function getURL(url) {
+          return (await fetch(url)).json();
+        }
+        
+        function getInfoSelect(select) {
+          return select.options[select.selectedIndex].text;
+        }
+        
+        async function calculate() {
+          let from = label_daMoeda.value;
+          let to = label_paraMoeda.value;
+          let { rates } = await getURL(`https://api.exchangerate-api.com/v4/latest/${from}`);
+          let rate = rates[to];
+          mostra_taxa.innerText = `1 ${getInfoSelect(label_daMoeda)} = ${rate} ${getInfoSelect(label_paraMoeda)}`
+          input_para_Moeda.value = (input_da_Moeda.value * rate).toFixed(2);
+        }
+        </script>
+        <!-- About Section-->
+        <section class="page-section bg-primary text-white mb-0" id="about">
+            <div class="container">
+                <!-- About Section Heading-->
+                <h2 class="page-section-heading text-center text-uppercase text-white">Sobre a ConvertCoin</h2>
+                <!-- Icon Divider-->
+                <div class="divider-custom divider-light">
+                    <div class="divider-custom-line"></div>
+                    <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                    <div class="divider-custom-line"></div>
+                </div>
+                <!-- About Section Content-->
+                <div class="row">
+                    <div class="col-lg-4 ml-auto"><p class="lead">ConvertCoin é uma aplicação desenvolvida durante o curso da disciplina de desenvolvimento web 2 da Universidade Tecnológica Federal do Paraná. Durante o desenvolvimento aplicamos tecnologias como HTML, CSS e JavaScript</p></div>
+                    <div class="col-lg-4 mr-auto"><p class="lead">O sistema tem por objetivo realizar a conversão de moedas em tempo real, para realizar este serviço o sistema utiliza consultas na API publica ExchangeRate, que pode ser consultada no link https://www.exchangerate-api.com/  </p></div>
+                </div>
+            </div>
+        </section>
+        <!-- Contact Section-->
+        <section class="page-section" id="contact">
+            <div class="container">
+                <!-- Contact Section Heading-->
+                <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Contato</h2>
+                <!-- Icon Divider-->
+                <div class="divider-custom">
+                    <div class="divider-custom-line"></div>
+                    <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                    <div class="divider-custom-line"></div>
+                </div>
+                <!-- Contact Section Form-->
+                <h3 class="text-center mb-0">Daniel G. da Silva e Francisco Farias</h3> 
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer text-center">
+            <div class="container">
+                <div class="row">
+                    <!-- Footer Location-->
+                    <div class="col-lg-4 mb-5 mb-lg-0">
+                        <h4 class="text-uppercase mb-4">Local</h4>
+                        <p class="lead mb-0">
+                            Universidade Tecnológica Federal do Paraná
+                            <br />
+                            Campus Cornélo Procópio
+                        </p>
+                    </div>
+                    <!-- Footer Social Icons-->
+                    <div class="col-lg-4 mb-5 mb-lg-0">
+                        <h4 class="text-uppercase mb-4">Em breve nas principais rede sociais</h4>
+                        <a class="btn btn-outline-light btn-social mx-1" href="#!"><i class="fab fa-fw fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social mx-1" href="#!"><i class="fab fa-fw fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social mx-1" href="#!"><i class="fab fa-fw fa-linkedin-in"></i></a>
+                        <a class="btn btn-outline-light btn-social mx-1" href="#!"><i class="fab fa-fw fa-dribbble"></i></a>
+                    </div>
+                    <!-- Footer About Text-->
+                    <div class="col-lg-4">
+                        <h4 class="text-uppercase mb-4">Curso Engenharia de Sofware</h4>
+                        <p class="lead mb-0">
+                            Disciplina: Desenvolvimento web 2
+                            Tecnologias envolvidas: HTML, CSS, JavaScript</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Copyright Section-->
+        <div class="copyright py-4 text-center text-white">
+            <div class="container"><small>Copyright © ConvertCoin 2020</small></div>
+        </div>
+        <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes)-->
+        <div class="scroll-to-top d-lg-none position-fixed">
+            <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top"><i class="fa fa-chevron-up"></i></a>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Contact form JS-->
+        <script src="assets/mail/jqBootstrapValidation.js"></script>
+        <script src="assets/mail/contact_me.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
