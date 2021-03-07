@@ -28,11 +28,11 @@ async function updateCoins() {
   });
 
   COINS = results.data.data.coins; // TODO tratar erros na request
+  return COINS;
 }
 
 async function loadCoins() {
-  await updateCoins();
-  const coins = COINS;
+  const coins = await updateCoins();
   coins.sort((a, b) => a.name < b.name);
   
   console.log(coins); // TODO remover
