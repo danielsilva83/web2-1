@@ -8,6 +8,8 @@ let input_para_Moeda;
 let mostra_taxa;
 let troca;
 
+let invalid_input;
+
 window.onload = () => {
 
   label_daMoeda = document.getElementById('daMoeda');
@@ -17,6 +19,8 @@ window.onload = () => {
 
   mostra_taxa = document.getElementById('mostra_taxa');
   troca = document.getElementById('troca');
+
+  invalid_input = document.getElementById('invalid_input');
 
   label_daMoeda.addEventListener('change', calculate);
   input_da_Moeda.addEventListener('input', calculate);
@@ -51,10 +55,20 @@ function getInfoSelect(select) {
 }
 
 async function calculate() {
+
+  console.log(isNaN(input_da_Moeda.value));
+  console.log(input_da_Moeda.value);
+
+  if (input_da_Moeda.value === "") {
+    invalid_input.style.display = "block";
+    return;
+  } else {
+    invalid_input.style.display = "none";
+  }
+
   let from = label_daMoeda.value;
   let to = label_paraMoeda.value;
   let { rates } = await getURL(`https://api.exchangerate-api.com/v4/latest/${from}`);
-  console.log(rates);
   let rate = rates[to];
   mostra_taxa.innerText = `1 ${getInfoSelect(label_daMoeda)} = ${rate} ${getInfoSelect(label_paraMoeda)}`
   input_para_Moeda.value = (input_da_Moeda.value * rate).toFixed(2);
