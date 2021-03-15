@@ -15,6 +15,7 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
+        <script src="js/currency.js"></script>
     </head>
     <body id="page-top">
         <!-- Navigation-->
@@ -151,57 +152,3 @@
         <script src="js/scripts.js"></script>
     </body>
 </html>
-
-<script>
-    "use strict";
-    const label_daMoeda = document.getElementById('daMoeda');
-    const input_da_Moeda = document.getElementById('da_Moeda');
-    const label_paraMoeda = document.getElementById('paraMoeda');
-    const input_para_Moeda = document.getElementById('para_Moeda');
-    
-    const mostra_taxa = document.getElementById('mostra_taxa');
-    const troca = document.getElementById('troca');
-    
-    label_daMoeda.addEventListener('change', calculate);
-    input_da_Moeda.addEventListener('input', calculate);
-    label_paraMoeda.addEventListener('change', calculate);
-    input_para_Moeda.addEventListener('input', calculate);
-    troca.addEventListener('click', infotroca);
-    
-    main();
-    
-    function main() {
-      let currency = { "BRL": "Real", "EUR": "Euro", "USD": "Dollar" };
-      let options = [];
-      for (var [key, value] of Object.entries(currency)) {
-        options.push(`<option value='${key}'>${value}</option>`);
-      }
-      label_daMoeda.innerHTML = options.join('\n');
-      label_paraMoeda.innerHTML = options.join('\n');
-      calculate();
-    }
-    
-    function infotroca() {
-      let temp = label_daMoeda.value;
-      label_daMoeda.value = label_paraMoeda.value;
-      label_paraMoeda.value = temp;
-      calculate();
-    }
-    
-    async function getURL(url) {
-      return (await fetch(url)).json();
-    }
-    
-    function getInfoSelect(select) {
-      return select.options[select.selectedIndex].text;
-    }
-    
-    async function calculate() {
-      let from = label_daMoeda.value;
-      let to = label_paraMoeda.value;
-      let { rates } = await getURL(`https://api.exchangerate-api.com/v4/latest/${from}`);
-      let rate = rates[to];
-      mostra_taxa.innerText = `1 ${getInfoSelect(label_daMoeda)} = ${rate} ${getInfoSelect(label_paraMoeda)}`
-      input_para_Moeda.value = (input_da_Moeda.value * rate).toFixed(2);
-    }
-    </script>

@@ -5,7 +5,7 @@ const ENDPOINT = CORS_BYPASS + 'https://api.coinranking.com/v2/';
 
 const API_KEY = 'coinranking09fa4518fc5cff889974c064cb364674f95555d4d679c84e';
 
-let COINS = null; // referência global de moedas, atualizada com updateCoins()
+let COINS = []; // referência global de moedas, atualizada com updateCoins()
 
 const NULL_COIN = {
   name: '(escolha uma moeda)',
@@ -47,6 +47,13 @@ async function loadCoins() {
 
   createCoin(dropdownFrom, NULL_COIN, true);
   createCoin(dropdownTo, NULL_COIN, true);
+}
+
+function calculateExchange(uuidFrom, uuidTo, value) {
+  const from = COINS.filter(a => a.uuid === uuidFrom)[0];
+  const to = COINS.filter(a => a.uuid === uuidTo)[0];
+  // a essa altura vc se pergunta se deveria manter COINS como um hashmap
+  return (value * from.btcPrice) / to.btcPrice
 }
 
 loadCoins();
